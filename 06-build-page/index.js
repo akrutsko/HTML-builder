@@ -17,7 +17,7 @@ const bundleFile = path.join(projectPath, 'style.css');
 const destinationAssets = path.join(projectPath, assets);
 
 async function syncFiles(sourcePath, destinationPath) {
-  await fsPromises.mkdir(destinationPath, { recursive: true, force: true });
+  await fsPromises.mkdir(destinationPath, { recursive: true });
   const files = await fsPromises.readdir(sourcePath, { withFileTypes: true });
 
   files.forEach((file) => {
@@ -67,7 +67,7 @@ async function parseTemplate(templateFile, componentsPath, indexFile) {
 
 (async () => {
   await fsPromises.rm(projectPath, { recursive: true, force: true });
-  await fsPromises.mkdir(projectPath, { recursive: true, force: true });
+  await fsPromises.mkdir(projectPath, { recursive: true });
   syncFiles(sourceAssets, destinationAssets);
   composeBundle(sourceStyles, bundleFile);
   parseTemplate(templateFile, sourceComponents, indexFile);
