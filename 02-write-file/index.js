@@ -4,7 +4,7 @@ const readline = require('readline');
 const os = require('os');
 
 const pathToFile = path.join(__dirname, 'output.txt');
-const file = fs.createWriteStream(pathToFile, 'utf-8');
+const file = fs.createWriteStream(pathToFile, {encoding: 'utf-8', flags: 'a'});
 
 // clear console
 process.stdout.write('\033c');
