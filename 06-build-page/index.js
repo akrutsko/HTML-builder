@@ -1,5 +1,7 @@
 const path = require('path');
+const fs = require('fs');
 const fsPromises = require('fs/promises');
+const { pipeline } = require('stream/promises');
 
 const assets = 'assets';
 const components = 'components';
@@ -36,15 +38,20 @@ async function syncFiles(sourcePath, destinationPath) {
 }
 
 async function composeBundle(cssPath, bundleFile) {
-  await fsPromises.writeFile(bundleFile, '');
+  await fsPromises.rm(bundleFile, { force: true });
 
   const files = await fsPromises.readdir(cssPath, { withFileTypes: true });
   const cssFiles = files.filter((file) => path.extname(file.name) === '.css');
 
-  cssFiles.forEach(async (file) => {
-    const data = await fsPromises.readFile(path.join(cssPath, file.name));
-    await fsPromises.appendFile(bundleFile, data);
-  });
+  for (const file of cssFiles) {
+    const sourceFile = path.join(cssPath, file.name);
+    const rs = fs.createReadStream(sourceFile, 'utf-8');
+    const ws = fs.createWriteStream(bundleFile, {
+      encoding: 'utf-8',
+      flags: 'a',
+    });
+    await pipeline(rs, ws);
+  }
 }
 
 async function parseTemplate(templateFile, componentsPath, indexFile) {
